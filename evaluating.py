@@ -3,7 +3,7 @@ from utils import flatten_lists
 
 
 # 用于评价模型 计算精确率 召回率 f1值
-class Matrics(object):
+class Metrics(object):
 
     def __init__(self, golden_tags, predict_tags, remove_O=False):
         '''
@@ -18,13 +18,16 @@ class Matrics(object):
         #
         if remove_O:
             self._remove_Otags()
+
         self.tagset = set(self.golden_tags)
+        self.tagset = sorted(self.tagset)
+
         self.correct_tags_number = self.count_correct_tags()
         self.predict_tags_counter = Counter(self.predict_tags)
         self.golden_tags_counter = Counter(self.golden_tags)
         self.precision_scores = self.cal_precision()
         self.recall_scores = self.cal_recall()
-        self.f1_score = self.cal_f1()
+        self.f1_scores = self.cal_f1()
 
     # 去除所有O标记
     def _remove_Otags(self):
@@ -72,3 +75,69 @@ class Matrics(object):
             p, r = self.precision_scores[tag], self.recall_scores[tag]
             f1_scores[tag] = 2 * p * r / (p + r + 1e-10)
         return f1_scores
+
+    # 展示结果
+    def report_scores(self):
+        print("           precision    recall  f1-score   support")
+        row_format = '{:>9s}  {:>9.4f} {:>9.4f} {:>9.4f} {:>9}'
+
+        for tag in self.tagset:
+            print(row_format.format(
+                tag, self.precision_scores[tag],
+                self.recall_scores[tag],
+                self.f1_scores[tag],
+                self.golden_tags_counter[tag]
+            ))
+
+        avg_metrics = self._cal_weighted_average()
+        print(row_format.format(
+            'avg/total',
+            avg_metrics['precision'],
+            avg_metrics['recall'],
+            avg_metrics['f1_score'],
+            len(self.golden_tags)
+        ))
+
+    def _cal_weighted_average(self):
+        weighted_average = {}
+        total = len(self.golden_tags)
+
+        # 计算weighted precisions:
+        weighted_average['precision'] = 0.
+        weighted_average['recall'] = 0.
+        weighted_average['f1_score'] = 0.
+        for tag in self.tagset:
+            size = self.golden_tags_counter[tag]
+            weighted_average['precision'] += self.precision_scores[tag] * size
+            weighted_average['recall'] += self.recall_scores[tag] * size
+            weighted_average['f1_score'] += self.f1_scores[tag] * size
+
+        for metric in weighted_average.keys():
+            weighted_average[metric] /= total
+
+        return weighted_average
+
+    # 计算混淆矩阵
+    def report_confusion_matrix(self):
+        print('\nConfusion Matrix:')
+        tag_list = list(self.tagset)
+        tags_size = len(tag_list)
+        matrix = []
+        # matrix[i][j] 表示第i个tag被模型预测称第j个tag的次数
+
+        for i in range(tags_size):
+            matrix.append([0] * tags_size)
+
+        for golden_tag, predict_tag in zip(self.golden_tags, self.predict_tags):
+            try:
+                row = tag_list.index(golden_tag)
+                col = tag_list.index(predict_tag)
+                matrix[row][col] += 1
+            except ValueError:
+                # 未出现在golden_tags里的标记则跳过
+                continue
+
+        row_format_ = '{:>7} ' * (tags_size + 1)
+        print(row_format_.format('', *tag_list))
+        for i, row in enumerate(matrix):
+            print(row_format_.format(tag_list[i], *row))

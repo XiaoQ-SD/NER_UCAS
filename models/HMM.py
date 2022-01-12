@@ -81,12 +81,9 @@ class HMM(object):
 
         pred_tag_lists = []
         for word_list in word_lists:
-            pred_tag_lists = self.decoding(word_list, word2id, tag2id)
-            pred_tag_lists.append(pred_tag_lists)
+            pred_tag_list = self.decoding(word_list, word2id, tag2id)
+            pred_tag_lists.append(pred_tag_list)
         return pred_tag_lists
-
-
-
 
     def decoding(self, word_list, word2id, tag2id):
         '''
