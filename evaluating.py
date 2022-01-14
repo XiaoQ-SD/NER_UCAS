@@ -78,7 +78,8 @@ class Metrics(object):
 
     # 展示结果
     def report_scores(self):
-        print("           precision    recall  f1-score   support")
+        File = open('cache/eval.txt', 'w')
+        print("           precision    recall  f1-score   support", file=File)
         row_format = '{:>9s}  {:>9.4f} {:>9.4f} {:>9.4f} {:>9}'
 
         for tag in self.tagset:
@@ -87,7 +88,7 @@ class Metrics(object):
                 self.recall_scores[tag],
                 self.f1_scores[tag],
                 self.golden_tags_counter[tag]
-            ))
+            ), file=File)
 
         avg_metrics = self._cal_weighted_average()
         print(row_format.format(
@@ -96,7 +97,8 @@ class Metrics(object):
             avg_metrics['recall'],
             avg_metrics['f1_score'],
             len(self.golden_tags)
-        ))
+        ), file=File)
+        File.close()
 
     def _cal_weighted_average(self):
         weighted_average = {}
@@ -119,7 +121,8 @@ class Metrics(object):
 
     # 计算混淆矩阵
     def report_confusion_matrix(self):
-        print('\nConfusion Matrix:')
+        File = open('cache/eval.txt', 'a+')
+        print('\nConfusion Matrix:', file=File)
         tag_list = list(self.tagset)
         tags_size = len(tag_list)
         matrix = []
@@ -138,6 +141,8 @@ class Metrics(object):
                 continue
 
         row_format_ = '{:>7} ' * (tags_size + 1)
-        print(row_format_.format('', *tag_list))
+        print(row_format_.format('', *tag_list), file=File)
         for i, row in enumerate(matrix):
-            print(row_format_.format(tag_list[i], *row))
+            print(row_format_.format(tag_list[i], *row), file=File)
+
+        File.close()

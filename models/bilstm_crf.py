@@ -9,10 +9,10 @@ from .util import *
 
 # 设置lstm训练参数
 class TrainingConfig(object):
-    batch_size = 32
+    batch_size = 128
     # 学习速率
     lr = 0.001
-    epoches = 60
+    epoches = 15
     print_step = 5
 
 
@@ -134,7 +134,7 @@ class BILSTM_Model(object):
             val_loss = val_losses / val_step
 
             if val_loss < self._best_val_loss:
-                print("保存模型...")
+                print("save model...")
                 self.best_model = deepcopy(self.model)
                 self._best_val_loss = val_loss
 
