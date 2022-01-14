@@ -7,7 +7,8 @@ from models.CRF import CRFModel
 from models.bilstm_crf import BILSTM_Model
 
 HMM_MODEL_PATH = './ckpts/hmm.pkl'
-
+CRF_MODEL_PATH = './ckpts/crf.pkl'
+BiLSTMCRF_MODEL_PATH = './ckpts/bilstm_crf.pkl'
 
 def hmm_train(train_data, test_data, word2id, tag2id, remove_O=False):
     train_word_lists, train_tag_lists = train_data
@@ -28,12 +29,16 @@ def hmm_eval(train_data, test_data, word2id, tag2id, remove_O=False):
     train_word_lists, train_tag_lists = train_data
     test_word_lists, test_tag_lists = test_data
 
-    global hmm_model
+    hmm_model = load_model(HMM_MODEL_PATH)
     pred_tag_lists = hmm_model.test(
         test_word_lists,
         word2id,
         tag2id
     )
+
+    # print(test_word_lists)
+    # print(pred_tag_lists)
+
     metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
     # 计算各个数值与混淆矩阵
     metrics.report_scores()

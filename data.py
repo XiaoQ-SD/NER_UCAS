@@ -1,6 +1,7 @@
 from os.path import join
 from codecs import open
 
+
 def build_map(lists):
     maps = {}
     for list_ in lists:
@@ -24,7 +25,7 @@ def build_corpus(split, make_vocab=True, data_dir='./ResumeNER'):
         tag2id: tag序列表，map格式
     '''
 
-    assert split in ['train', 'dev', 'test']
+    assert split in ['train', 'dev', 'test', 'dc']
 
     word_lists = []
     tag_lists = []
@@ -32,7 +33,7 @@ def build_corpus(split, make_vocab=True, data_dir='./ResumeNER'):
     # 读取文件 train/dev/test + .char.bmes
     # 将单词和标记序列分别放入word_lists和tag_lists中
 
-    with open(join(data_dir, split+".char.bmes"), 'r', encoding='utf-8') as f:
+    with open(join(data_dir, split + ".char.bmes"), 'r', encoding='utf-8') as f:
         word_list = []
         tag_list = []
 
@@ -43,11 +44,12 @@ def build_corpus(split, make_vocab=True, data_dir='./ResumeNER'):
                 tag_list.append(tag)
 
             else:
-                word_lists.append(word_list)
-                tag_lists.append(tag_list)
+                if len(word_list) > 0: word_lists.append(word_list)
+                if len(tag_list) > 0: tag_lists.append(tag_list)
                 word_list = []
                 tag_list = []
 
+    f.close()
     # 如果make_vocab为True，需返回word2id和tag2id
     if make_vocab:
         word2id = build_map(word_lists)
@@ -55,3 +57,5 @@ def build_corpus(split, make_vocab=True, data_dir='./ResumeNER'):
         return word_lists, tag_lists, word2id, tag2id
     else:
         return word_lists, tag_lists
+
+

@@ -157,3 +157,4 @@ class HMM(object):
         tag_list = [id2tag[id_] for id_ in reversed(best_path)]
 
         return tag_list
+

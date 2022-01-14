@@ -1,9 +1,11 @@
 import pickle
 
+
 def load_model(file_name):
     with open(file_name, 'rb') as f:
         model = pickle.load(f)
     return model
+
 
 def save_model(model, file_name):
     with open(file_name, "wb") as f:
@@ -18,6 +20,7 @@ def flatten_lists(lists):
         else:
             flatten_list.append(l)
     return flatten_list
+
 
 # LSTM模型训练的时候需要在word2id和tag2id加入PAD和UNK
 # 如果是加了CRF的lstm还要加入<start>和<end> (解码的时候需要用到)
@@ -34,6 +37,7 @@ def extend_maps(word2id, tag2id, for_crf=True):
         tag2id['<end>'] = len(tag2id)
 
     return word2id, tag2id
+
 
 def prepocess_data_for_lstmcrf(word_lists, tag_lists, test=False):
     assert len(word_lists) == len(tag_lists)
