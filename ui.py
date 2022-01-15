@@ -13,7 +13,6 @@ HMM_Trained = False
 CRF_Trained = False
 BiLSTM_Trained = False
 
-
 def deal(txt):
     txt = str(txt)
     txt = txt.replace(' ', '')
@@ -36,12 +35,6 @@ def display():
     '''
     All Datas
     '''
-    if os.path.exists('ckpts/hmm.pkl') == True:
-        HMM_Trained = True
-    if os.path.exists('ckpts/crf.pkl') == True:
-        CRF_Trained = True
-    if os.path.exists('ckpts/bilstm_crf.pkl') == True:
-        BiLSTM_Trained = True
 
     train_word_lists, train_tag_lists, word2id, tag2id = build_corpus("train")
     dev_word_lists, dev_tag_lists = build_corpus("dev", make_vocab=False)
@@ -63,6 +56,10 @@ def display():
         e2.insert('end', file_context)
 
     def evalModel():
+        global HMM_Trained
+        global CRF_Trained
+        global BiLSTM_Trained
+
         if len(lb.curselection()) == 1:
             value = lb.get(lb.curselection())
             if value == 'HMM':
@@ -106,6 +103,10 @@ def display():
             tkinter.messagebox.showinfo(title='worning', message='please select one first')
 
     def trainModel():
+        global HMM_Trained
+        global CRF_Trained
+        global BiLSTM_Trained
+
         if len(lb.curselection()) == 1:
             value = lb.get(lb.curselection())
             if value == 'HMM':
@@ -148,6 +149,10 @@ def display():
             tkinter.messagebox.showinfo(title='worning', message='please select one first')
 
     def solve():
+        global HMM_Trained
+        global CRF_Trained
+        global BiLSTM_Trained
+
         if len(lb.curselection()) == 1:
             input_data = e1.get('1.0', 'end')
             deal(input_data)

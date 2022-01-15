@@ -91,7 +91,7 @@ class Metrics(object):
             ))
 
         avg_metrics = self._cal_weighted_average()
-        print(row_format.format(
+        print('{:>9s}  {:>2.4f} {:>2.4f} {:>2.4f} {:>6}'.format(
             'avg/total',
             avg_metrics['precision'],
             avg_metrics['recall'],

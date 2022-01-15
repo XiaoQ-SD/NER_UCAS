@@ -80,30 +80,6 @@ def cal_loss(logits, targets, tag2id):
     return loss
 
 
-def cal_loss(logits, targets, tag2id):
-    '''
-    计算损失
-    :param logits:[B, L, out_size]
-    :param targets:[B, L]
-    :param tag2id:
-    :return:
-    '''
-    PAD = tag2id.get('<pad>')
-    assert PAD is not None
-
-    mask = (targets != PAD)
-    # [B, L]
-    targets = targets[mask]
-    out_size = logits.size(2)
-    logits = logits.masked_select(
-        mask.unsqueeze(2).expand(-1, -1, out_size)
-    ).contiguous().view(-1, out_size)
-
-    assert logits.size(0) == targets.size(0)
-    loss = F.cross_entropy(logits, targets)
-
-    return loss
-
 
 def cal_lstm_crf_loss(crf_scores, targets, tag2id):
     """计算双向LSTM-CRF模型的损失
